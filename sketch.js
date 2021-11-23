@@ -1,4 +1,3 @@
-
 var PLAY = 1;
 var END = 0;
 var gameState = PLAY;
@@ -8,7 +7,6 @@ var ground, invisibleGround, groundImage;
 var bricksGroup, brickImage;
 var obstaclesGroup, obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
 
-var score=0;
 
 function preload(){
   bg=loadImage("bg.png")
@@ -46,17 +44,26 @@ function setup() {
   invisibleGround = createSprite(200,300,400,10);
   invisibleGround.visible = false;
   bricksGroup = new Group();
+  gameOver = createSprite(300,100);
+  gameOver.addImage(gameOverImg);
   
-  fill(0);
-textSize(24);
-textFont('Georgia');
+  restart = createSprite(300,140);
+  restart.addImage(restartImg);
+  
+  gameOver.scale = 0.5;
+  restart.scale = 0.5;
+
+  gameOver.visible = false;
+  restart.visible = false;
+  
+ 
   score = 0;
 }
 
 function draw() {
   //trex.debug = true;
   background(bg);
-  text("Score: "+ score, 480,30);
+ 
   
   if (gameState===PLAY){
     
@@ -64,11 +71,8 @@ function draw() {
   
     if(keyDown("space") && mario.y >= 250) {
       mario.velocityY = -12;
-      jumpSound.play();
     }
-  if(score>0 && score%10 === 0){
-       checkPointSound.play() 
-    }
+  
     mario.velocityY = mario.velocityY + 0.5
     
     if (ground.x < 0){
@@ -79,26 +83,26 @@ function draw() {
     
       if(bricksGroup.get(i).isTouching(mario)){
       bricksGroup.get(i).remove()
-      score =score+1;
+      
     }
     }
     mario.collide(invisibleGround);
     spawnbricks();
     spawnObstacles();
-  
     if(obstaclesGroup.isTouching(mario)){
-        gameState = END;
-      
-    }
+      gameState = END;
+    
+  }
+   
     mario.collide(bricksGroup);
   }
+  
+  
   else if (gameState === END) {
-   
-    
-
+    mario.changeAnimation("collided");
+    gameOver.visible = true;
+    restart.visible = true;
   }
-  
-  
   drawSprites();
 }
 
@@ -135,4 +139,3 @@ function spawnObstacles() {
     obstaclesGroup.add(obstacle);
   }
 }
-
